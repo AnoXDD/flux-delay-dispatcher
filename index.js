@@ -8,33 +8,35 @@ import {Dispatcher} from "flux";
 
 export default class DelayDispatcher<TPayload> extends Dispatcher {
 
-  _idKey: string;
-  _payloadQueue: { [key: number]: (payload: TPayload) => void };
+  _payloadQueue: {
+    [key: string]: {
+      id: string,
+      token: number,
+      payload: TPayload,
+    }
+  };
   _queue: Array<TPayload>;
+  _id: number;
 
-  constructor(idKey: string = idKey) {
+  constructor() {
     super();
 
     this._payloadQueue = {};
     this._queue = [];
-    this._idKey = idKey;
-
-    super.register(payload => {
-      if (!this.willBeDispatching()) {
-        this._dispatchQueue();
-      }
-    });
+    this._id = 0;
   }
 
-  dispatch(payload: TPayload, delay: number = 0) {
+  dispatch(payload: TPayload, delay: number = 0): void {
     if (delay === 0) {
       super.dispatch(payload);
       return;
     }
 
-    let token = setTimeout(() => {
-      this._payloadQueue[token] = payload;
-      this._dispatchOnTimeout(token);
+    let id = `${new Date().getTime()}-${this._id++}`;
+    this._payloadQueue[id] = payload;
+
+    setTimeout(() => {
+      this._dispatchOnTimeout(id);
     }, delay);
   }
 
@@ -42,8 +44,8 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
    * Dispatches the payload after all the delayed dispatches are done
    * @param payload
    */
-  dispatchOnClear(payload: TPayload) {
-    if (this.willBeDispatching()) {
+  dispatchOnClear(payload: TPayload): void {
+    if (!this.willBeDispatching()) {
       super.dispatch(payload);
       return;
     }
@@ -54,27 +56,28 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
   /**
    * Returns if current dispatcher WILL be dispatching any payload
    */
-  willBeDispatching() {
-    return (Object.keys(this._payloadQueue).length === 0);
+  willBeDispatching(): boolean {
+    return (Object.keys(this._payloadQueue).length !== 0);
   }
 
   /**
    * Release all the payloads in the queue
    */
-  releaseDelayedPayload() {
-    for (let token in this._payloadQueue) {
-      if (this._payloadQueue.hasOwnProperty(token)) {
-        super.dispatch(this._payloadQueue[token]);
+  releaseDelayedPayload(): void {
+    for (let id in this._payloadQueue) {
+      if (this._payloadQueue.hasOwnProperty(id)) {
+        this._dispatchOnTimeout(id);
       }
     }
-
-    // this._dispatchQueue() will be called after all delayed payloads are
-    // dispatched
   }
 
-  _dispatchOnTimeout(token) {
-    let payload = this._payloadQueue[token];
-    delete this._payloadQueue[token];
+  _dispatchOnTimeout(id): void {
+    let payload = this._payloadQueue[id];
+    delete this._payloadQueue[id];
+
+    if (!this.willBeDispatching()) {
+      this._dispatchQueue();
+    }
 
     super.dispatch(payload);
   }
@@ -83,7 +86,7 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
    * Dispatches all the payloads
    * @private
    */
-  _dispatchQueue() {
+  _dispatchQueue(): void {
     for (let payload of this._queue) {
       super.dispatch(payload);
     }

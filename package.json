@@ -4,7 +4,7 @@
   "description": "A Dispatcher for Flux that supports delayed event dispatch",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",

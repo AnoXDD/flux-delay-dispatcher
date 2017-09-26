@@ -1,6 +1,6 @@
 {
   "name": "flux-delay-dispatcher",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A Dispatcher for Flux that supports delayed event dispatch",
   "main": "index.js",
   "scripts": {

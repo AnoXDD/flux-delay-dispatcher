@@ -1,22 +1,10 @@
 /**
  * Created by Anoxic on 9/25/2017.
- *
- * @flow
  */
 
 import {Dispatcher} from "flux";
 
-export default class DelayDispatcher<TPayload> extends Dispatcher {
-
-  _payloadQueue: {
-    [key: string]: {
-      id: string,
-      token: number,
-      payload: TPayload,
-    }
-  };
-  _callbackQueue: Array<TPayload>;
-  _id: number;
+export default class DelayDispatcher extends Dispatcher {
 
   constructor() {
     super();
@@ -26,7 +14,7 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
     this._id = 0;
   }
 
-  dispatch(payload: TPayload, delay: number = 0): void {
+  dispatch(payload, delay = 0) {
     if (delay === 0) {
       super.dispatch(payload);
       return;
@@ -47,7 +35,7 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
    * Dispatches the payload after all the delayed dispatches are done
    * @param payload
    */
-  dispatchOnClear(payload: TPayload): void {
+  dispatchOnClear(payload) {
     if (!this.willBeDispatching()) {
       super.dispatch(payload);
       return;
@@ -59,14 +47,14 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
   /**
    * Returns if current dispatcher WILL be dispatching any payload
    */
-  willBeDispatching(): boolean {
+  willBeDispatching() {
     return (Object.keys(this._payloadQueue).length !== 0);
   }
 
   /**
    * Dispatches all the payloads in the queue
    */
-  dispatchDelayedPayload(): void {
+  dispatchDelayedPayload() {
     for (let id in this._payloadQueue) {
       if (this._payloadQueue.hasOwnProperty(id)) {
         this._dispatchOnTimeout(id);
@@ -77,7 +65,7 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
   /**
    * Dispatch only if no payloads are scheduled to be dispatched
    */
-  dispatchOnlyIfClear(payload: TPayload): void {
+  dispatchOnlyIfClear(payload) {
     if (this.willBeDispatching()) {
       return;
     }
@@ -89,7 +77,7 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
    * Skips all the payloads in the queue and executes payloads originally
    * scheduled after those delayed payloads are dispatched
    */
-  clearAllDelayedPayloads(): void {
+  clearAllDelayedPayloads() {
     this._resetPayloadQueue();
     this._dispatchQueue();
   }
@@ -98,7 +86,7 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
    * Clears all the payloads originally scheduled after delayed payloads are
    * dispatched
    */
-  clearAllCallbackPayloads(): void {
+  clearAllCallbackPayloads() {
     this._callbackQueue = [];
   }
 
@@ -106,7 +94,7 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
    * Clears all the payloads in the queue and payloads originally scheduled
    * after those delayed payloads are dispatched
    */
-  clearAllFuturePayloads(): void {
+  clearAllFuturePayloads() {
     this._resetPayloadQueue();
 
     this.clearAllCallbackPayloads();
@@ -121,7 +109,7 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
     this._payloadQueue = {};
   }
 
-  _dispatchOnTimeout(id): void {
+  _dispatchOnTimeout(id) {
     let {payload} = this._payloadQueue[id];
     delete this._payloadQueue[id];
 
@@ -136,7 +124,7 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
    * Dispatches all the payloads
    * @private
    */
-  _dispatchQueue(): void {
+  _dispatchQueue() {
     for (let payload of this._callbackQueue) {
       super.dispatch(payload);
     }

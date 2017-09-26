@@ -1,4 +1,7 @@
 # flux-delay-dispatcher
+
+[![npm](https://img.shields.io/npm/v/flux-delay-dispatcher.svg?maxAge=86400)](https://www.npmjs.com/package/flux-delay-dispatcher)
+
 A Dispatcher for Flux that supports delayed event dispatch.
 
 ## Introduction

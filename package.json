@@ -1,10 +1,11 @@
 {
   "name": "flux-delay-dispatcher",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Dispatcher for Flux that supports delayed event dispatch",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",

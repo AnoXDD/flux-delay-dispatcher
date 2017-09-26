@@ -193,7 +193,39 @@ test("release delayed payload", () => {
 
   expect(f).not.toBeCalled();
 
-  dispatcher.releaseDelayedPayload();
+  dispatcher.dispatchDelayedPayload();
 
   expect(f).toHaveBeenCalledTimes(times + 1);
+});
+
+describe("clear some kind of payloads", () => {
+  beforeEach(() => {
+    dispatcher.dispatch(payload, 100);
+    dispatcher.dispatchOnClear(payloadBoolean);
+  });
+
+  test("clear all delayed payloads", () => {
+    dispatcher.clearAllDelayedPayloads();
+
+    expect(f).not.toHaveBeenCalledWith(payload);
+    expect(f).toHaveBeenCalledWith(payloadBoolean);
+  });
+
+  test("clear all callback payloads", () => {
+    dispatcher.clearAllCallbackPayloads();
+
+    jest.runAllTimers();
+
+    expect(f).toHaveBeenCalledWith(payload);
+    expect(f).not.toHaveBeenCalledWith(payloadBoolean);
+  });
+
+  test("clear all delayed payloads", () => {
+    dispatcher.clearAllFuturePayloads();
+
+    jest.runAllTimers();
+
+    expect(f).not.toHaveBeenCalledWith(payload);
+    expect(f).not.toHaveBeenCalledWith(payloadBoolean);
+  });
 });

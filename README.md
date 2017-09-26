@@ -20,8 +20,9 @@ This delay dispatcher can dispatch a payload immediately or after certian delay.
 ## API
 
 * **dispatch(object payload, number delay = 0): void** Dispatches a payload after delay (in milliseconds). If delay is zero, the payload will be dispatched immediately.
-* **dispatchOnClear(object payload) : void** Dispatches a payload after all the scheduled dispatches are done (i.e. called by `dispatch(...)`)
-* **willBeDispatching() : boolean** Returns if current dispatcher WILL be dispatching any payload
+* **dispatchOnClear(object payload): void** Dispatches a payload after all the scheduled dispatches are done (i.e. called by `dispatch(...)`)
+* **dispatchOnlyIfClear(object payload): void** Dispatch only if no payloads are scheduled to be dispatched
+* **willBeDispatching(): boolean** Returns if current dispatcher WILL be dispatching any payload
 * **dispatchDelayedPayload() : void** Dispatches all queued payloads
 * **clearAllDelayedPayloads(): void** Skips all the payloads in the queue and executes payloads originally scheduled after those delayed payloads are dispatched
 * **clearAllCallbackPayloads(): void** Clears all the payloads originally scheduled after delayed payloads are dispatched

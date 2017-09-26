@@ -75,6 +75,17 @@ export default class DelayDispatcher<TPayload> extends Dispatcher {
   }
 
   /**
+   * Dispatch only if no payloads are scheduled to be dispatched
+   */
+  dispatchOnlyIfClear(payload: TPayload): void {
+    if (this.willBeDispatching()) {
+      return;
+    }
+
+    super.dispatch(payload);
+  }
+
+  /**
    * Skips all the payloads in the queue and executes payloads originally
    * scheduled after those delayed payloads are dispatched
    */

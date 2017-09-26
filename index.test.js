@@ -165,6 +165,17 @@ test("dispatch on clear without queue", () => {
   expect(f).toBeCalled();
 });
 
+test("dispatch only if clear", () => {
+  dispatcher.dispatchOnlyIfClear(payload);
+
+  expect(f).toHaveBeenCalledTimes(1);
+
+  dispatcher.dispatch(payloadBoolean, 100);
+  dispatcher.dispatchOnlyIfClear(payload);
+
+  expect(f).toHaveBeenCalledTimes(1);
+})
+
 test("will be dispatching", () => {
   expect(dispatcher.willBeDispatching()).toBeFalsy();
 
